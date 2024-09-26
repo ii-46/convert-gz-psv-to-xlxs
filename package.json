@@ -1,6 +1,7 @@
 {
   "name": "convertgztoexcel",
   "version": "1.0.0",
+  "author": "Inthava Xaiyaloun",
   "private": true,
   "main": "main/main.js",
   "scripts": {
