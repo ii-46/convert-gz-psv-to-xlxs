@@ -1,6 +1,9 @@
 import {contextBridge, ipcRenderer} from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  sendMessage: (message: string) => ipcRenderer.send('message', message),
-  readFile: (filePath: string)=> ipcRenderer.send('read-file', filePath)
+  sendMessage: (message: string, payload: string) => {
+    console.log('Sending message to main process:', payload)
+    ipcRenderer.send('read-file', payload)
+  },
+  // readFile: (filePath: string)=> ipcRenderer.send('read-file', filePath)
 })

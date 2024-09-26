@@ -56,6 +56,7 @@ ipcMain.on('message', (event, message) => {
 })
 
 ipcMain.on('read-file',async (event, folderPath) => {
+  console.log(folderPath)
   let fileList = fs.readdirSync(folderPath).filter((file) => file.split(".").length > 1)
   let gzFileList = fileList.filter((file) => file.endsWith('.gz'))
   let xlsxFileList = fileList.filter((file) => file.endsWith('.xlsx'))
@@ -63,7 +64,6 @@ ipcMain.on('read-file',async (event, folderPath) => {
   for (let i = 0; i < gzFileList.length; i++) {
     const filePath = path.join(folderPath, gzFileList[i])
     const rawFilePath = path.join(folderPath, gzFileList[i].split(".")[0] + ".prv")
-    console.log(filePath, rawFilePath)
     if (!fs.existsSync(filePath)) {
       continue
     }
@@ -78,7 +78,7 @@ ipcMain.on('read-file',async (event, folderPath) => {
   gzFileList = fileList.filter((file) => file.endsWith('.gz'))
   xlsxFileList = fileList.filter((file) => file.endsWith('.xlsx'))
   const rawFileList = fileList.filter((file) => file.endsWith('.prv'))
-  /*if (gzFileList.length  == xlsxFileList.length && gzFileList.length == rawFileList.length) {
+  if (gzFileList.length  == xlsxFileList.length && gzFileList.length == rawFileList.length) {
     // delete prv and gz files
     // BUG!
     for (let i = 0; i < rawFileList.length; i++) {
@@ -86,7 +86,6 @@ ipcMain.on('read-file',async (event, folderPath) => {
         continue
       }
       fs.rmSync(path.join(folderPath, rawFileList[i]), { force: true })
-      console.log("Deleted", path.join(folderPath, rawFileList[i]))
     }
     for (let i = 0; i < gzFileList.length; i++) {
       if (!fs.existsSync(path.join(folderPath, gzFileList[i]))) {
@@ -94,7 +93,7 @@ ipcMain.on('read-file',async (event, folderPath) => {
       }
       fs.rmSync(path.join(folderPath, gzFileList[i]), { force: true })
     }
-  }*/
+  }
 });
 
 
@@ -110,7 +109,7 @@ async function convertToXLSX(event, filePath) {
     return
   }
   const data = fs.readFileSync(path.join(filePath));
-  const buf = legacy.decode(data, "tis-620")
+  const buf = legacy.decode(data, "cp874")
   const utf9buf = legacy.encode(buf, "utf8")
   const record = csvParse.parse(utf9buf,
       {
