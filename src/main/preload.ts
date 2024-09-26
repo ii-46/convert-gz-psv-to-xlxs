@@ -5,5 +5,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     console.log('Sending message to main process:', payload)
     ipcRenderer.send('read-file', payload)
   },
-  // readFile: (filePath: string)=> ipcRenderer.send('read-file', filePath)
+  logsListen: (callback: (any)=> void)=> ipcRenderer.on('file-contents', (_, data)=>(callback(data)))
 })

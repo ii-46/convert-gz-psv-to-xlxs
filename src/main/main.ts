@@ -61,6 +61,9 @@ ipcMain.on('read-file',async (event, folderPath) => {
   let gzFileList = fileList.filter((file) => file.endsWith('.gz'))
   let xlsxFileList = fileList.filter((file) => file.endsWith('.xlsx'))
   console.log(gzFileList, xlsxFileList)
+  event.reply('file-contents', 'Start reading files');
+  event.reply('file-contents', `${gzFileList.length} files are ready to convert`);
+  event.reply('file-contents', gzFileList);
   for (let i = 0; i < gzFileList.length; i++) {
     const filePath = path.join(folderPath, gzFileList[i])
     const rawFilePath = path.join(folderPath, gzFileList[i].split(".")[0] + ".prv")
@@ -69,6 +72,7 @@ ipcMain.on('read-file',async (event, folderPath) => {
     }
     const file = fs.readFileSync(filePath)
     const unzipped = await ungzip(file)
+    event.reply('file-contents', `Converting ${filePath} to xlsx`);
     fs.writeFileSync(rawFilePath, unzipped)
     await convertToXLSX(event, rawFilePath)
   }
@@ -130,5 +134,5 @@ async function convertToXLSX(event, filePath) {
   const ws = XLSX.utils.json_to_sheet(dataAsJson)
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
   fs.writeFileSync(newFilePath, XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }))
-  event.reply('file-contents', newFilePath);
+  event.reply('file-contents', `Successful converted: ${newFilePath}`);
 }
