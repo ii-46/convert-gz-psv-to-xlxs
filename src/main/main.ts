@@ -5,7 +5,7 @@ import legacy from "legacy-encoding"
 import path from "node:path";
 import * as csvParse from "csv-parse";
 import XLSX from "xlsx"
-import gunzip from "gunzip-file"
+import {ungzip} from 'node-gzip';
 function createWindow () {
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -67,32 +67,30 @@ ipcMain.on('read-file',async (event, folderPath) => {
     if (!fs.existsSync(filePath)) {
       continue
     }
-    gunzip(
-        filePath,
-        rawFilePath,
-        async () => {
-          await convertToXLSX(event, rawFilePath).catch(console.error)
-        })
+    const file = fs.readFileSync(filePath)
+    const unzipped = await ungzip(file)
+    fs.writeFileSync(rawFilePath, unzipped)
+    await convertToXLSX(event, rawFilePath)
   }
   fileList = fs.readdirSync(folderPath)
   gzFileList = fileList.filter((file) => file.endsWith('.gz'))
   xlsxFileList = fileList.filter((file) => file.endsWith('.xlsx'))
   const rawFileList = fileList.filter((file) => file.endsWith('.prv'))
-  if (gzFileList.length  == xlsxFileList.length && gzFileList.length == rawFileList.length) {
+  if (gzFileList.length >= rawFileList.length) {
     // delete prv and gz files
-    // BUG!
+    // remove only raw files
     for (let i = 0; i < rawFileList.length; i++) {
       if (!fs.existsSync(path.join(folderPath, rawFileList[i]))) {
         continue
       }
       fs.rmSync(path.join(folderPath, rawFileList[i]), { force: true })
     }
-    for (let i = 0; i < gzFileList.length; i++) {
-      if (!fs.existsSync(path.join(folderPath, gzFileList[i]))) {
-        continue
-      }
-      fs.rmSync(path.join(folderPath, gzFileList[i]), { force: true })
-    }
+    // for (let i = 0; i < gzFileList.length; i++) {
+    //   if (!fs.existsSync(path.join(folderPath, gzFileList[i]))) {
+    //     continue
+    //   }
+    //   fs.rmSync(path.join(folderPath, gzFileList[i]), { force: true })
+    // }
   }
 });
 
