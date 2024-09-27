@@ -1,5 +1,5 @@
 {
-    "appId": "com.electron.app",
+    "appId": "me.inthawa.gz2xlsx",
     "directories": {
         "output": "dist"
     },
@@ -7,13 +7,15 @@
         "oneClick": false,
         "perMachine": false,
         "allowToChangeInstallationDirectory": true,
-        "shortcutName": "Electron App"
+        "shortcutName": "GZ2XLSX"
     },
     "win": {
-        "target": "nsis"
+        "target": "nsis",
+        "icon": "icon.png"
     },
     "linux":  {
-        "target": ["snap"]
+        "target": ["snap"],
+        "icon": "icon.png"
     },
     "files": [
         {
